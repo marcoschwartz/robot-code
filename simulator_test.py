@@ -41,6 +41,7 @@ sim.generate_network()
 start_sim = time.time()
 sim.sim_network(currents,spikes_in)
 print "Time to simulate:", time.time() - start_sim
+print "Acceleration factor:", parameters.max_time/(time.time() - start_sim)
 
 # Plot result
 sim.plot_spikes()

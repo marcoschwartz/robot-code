@@ -10,21 +10,33 @@ class Neuron:
 
 	def __init__(self):
 			
-		self.parameters = {"EL" : -58.0,	
-			"gL" : 10.0,
-			"Vt" : 0.0,
-			"Vreset" : -58.0,
-			"C" : 200.0,
-			"a" : 0.0,
-			"tw" : 300.0,
-			"b" : 0.0,
-			"dT" : 2.0,
-			"Vexp" : -50.0, 
-			"expAct" : 1.0,
-			"gsynmax" : 4.0,
-			"tausyn" : 10.0,
-			"Esyn" : 0.0,
-			"tref" : 1.0}
+		if (parameters.neuron_type == "AdEx"):
+			self.parameters = {"EL" : -58.0,	
+				"gL" : 10.0,
+				"Vt" : 0.0,
+				"Vreset" : -58.0,
+				"C" : 200.0,
+				"a" : 0.0,
+				"tw" : 300.0,
+				"b" : 0.0,
+				"dT" : 2.0,
+				"Vexp" : -50.0, 
+				"expAct" : 1.0,
+				"gsynmax" : 4.0,
+				"tausyn" : 10.0,
+				"Esyn" : 0.0,
+				"tref" : 1.0}
+
+		if (parameters.neuron_type == "LIF"):
+			self.parameters = {"EL" : -58.0,	
+				"gL" : 10.0,
+				"Vt" : -50.0,
+				"Vreset" : -58.0,
+				"C" : 200.0,
+				"gsynmax" : 4.0,
+				"tausyn" : 10.0,
+				"Esyn" : 0.0,
+				"tref" : 1.0}
 			
 		self.v = self.parameters['EL']*1e-3
 		self.w = 0
@@ -83,16 +95,23 @@ class Neuron:
 				if (vn != []):
 					for i,item in enumerate(vn):
 						multi_comp_contribution = multi_comp_contribution + gn[i]*1e-9*(vn[i] - self.v)/(self.parameters['C']*1e-12)
-		
-				self.v = self.v + (-self.gsyn*(self.v-self.parameters['Esyn']*1e-3)/(self.parameters['C']*1e-12) + multi_comp_contribution - self.parameters['gL']*1e-9/(self.parameters['C']*1e-12) * (self.v-self.parameters['EL']*1e-3) + self.parameters['expAct']*self.parameters['gL']*1e-9*self.parameters['dT']*1e-3*math.exp((self.v-self.parameters['Vexp']*1e-3)/(self.parameters['dT']*1e-3))/(self.parameters['C']*1e-12) + stim/(self.parameters['C']*1e-12) - self.w/(self.parameters['C']*1e-12))*parameters.timestep
-				self.w = self.w + (self.parameters['a']*1e-9*(self.v-self.parameters['EL']*1e-3) - self.w)/(self.parameters['tw']*1e-3)*parameters.timestep
 				
+				if (parameters.neuron_type == "AdEx"):
+
+					self.v = self.v + (-self.gsyn*(self.v-self.parameters['Esyn']*1e-3)/(self.parameters['C']*1e-12) + multi_comp_contribution - self.parameters['gL']*1e-9/(self.parameters['C']*1e-12) * (self.v-self.parameters['EL']*1e-3) + self.parameters['expAct']*self.parameters['gL']*1e-9*self.parameters['dT']*1e-3*math.exp((self.v-self.parameters['Vexp']*1e-3)/(self.parameters['dT']*1e-3))/(self.parameters['C']*1e-12) + stim/(self.parameters['C']*1e-12) - self.w/(self.parameters['C']*1e-12))*parameters.timestep
+					self.w = self.w + (self.parameters['a']*1e-9*(self.v-self.parameters['EL']*1e-3) - self.w)/(self.parameters['tw']*1e-3)*parameters.timestep
+				
+				if (parameters.neuron_type == "LIF"):
+
+					self.v = self.v + (-self.gsyn*(self.v-self.parameters['Esyn']*1e-3)/(self.parameters['C']*1e-12) + multi_comp_contribution - self.parameters['gL']*1e-9/(self.parameters['C']*1e-12) * (self.v-self.parameters['EL']*1e-3) + stim/(self.parameters['C']*1e-12))*parameters.timestep
+					
 				if (self.v > self.parameters['Vt']*1e-3):
-				   self.v = self.parameters['Vreset']*1e-3
-				   self.w = self.w + self.parameters['b']*1e-9
-				   self.spikes.append(self.time_count)
-				   self.spike_flag_out = True
-				   self.ref_count = self.parameters['tref']*1e-3
+					self.v = self.parameters['Vreset']*1e-3
+					if (parameters.neuron_type == "AdEx"):
+						self.w = self.w + self.parameters['b']*1e-9
+					self.spikes.append(self.time_count)
+					self.spike_flag_out = True
+					self.ref_count = self.parameters['tref']*1e-3
 			   
 			if (self.record == True):
 				self.v_record.append(self.v)
