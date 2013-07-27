@@ -33,7 +33,7 @@ class Neuron:
 				"Vt" : -50.0,
 				"Vreset" : -58.0,
 				"C" : 200.0,
-				"gsynmax" : 4.0,
+				"gsynmax" : 2.0,
 				"tausyn" : 10.0,
 				"Esyn" : 0.0,
 				"tref" : 1.0}
@@ -51,6 +51,7 @@ class Neuron:
 		self.gsyn_record = []
 		self.spike_flag_out = False
 		self.spike_flag_in = "None"
+		self.spike_sensor_in = "None"
 
 	def sim(self,stim,spikes_list=[],vp=[],vn=[],gp=[],gn=[]):
 		
@@ -73,6 +74,10 @@ class Neuron:
 				# Calculate spike input
 				if (int(self.time_count/parameters.timestep) in spikes_list):
 					# print 'spike_received from direct input a time t', self.time_count
+					self.gsyn = self.gsyn + self.parameters['gsynmax']*1e-9
+
+				if (self.spike_sensor_in == "Excitatory"):
+					self.spike_sensor_in = "None"
 					self.gsyn = self.gsyn + self.parameters['gsynmax']*1e-9
 
 				if (self.spike_flag_in == "Excitatory"):

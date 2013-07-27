@@ -1,6 +1,6 @@
 # Global parameters for neural network
-number_neurons = 10
-number_sensors = 2
+number_neurons = 12
+number_sensors = 4
 neuron_type = "LIF"
 neuron_dna_length = 1 + number_neurons + number_sensors
 total_dna_length = neuron_dna_length*number_neurons
@@ -13,7 +13,8 @@ target = 1
 # Constants for neural network
 timestep = 1e-3
 robot_update = 100e-3
-max_time = 1
+robot_update_steps = int(robot_update/timestep)
+max_time = 0.5
 max_firing_rate = 1000.
 
 # Robot parameters
